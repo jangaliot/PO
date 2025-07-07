@@ -36,7 +36,7 @@ tickers = [
 
 # Función para descargar y procesar datos
 def load_data():
-    end_date = datetime(2025, 5, 20)
+    end_date = datetime(2025, 5, 5)
     start_date = end_date - timedelta(days=3*365)
     test_start_date = end_date - timedelta(days=365)
     
@@ -691,8 +691,8 @@ if 'carteras' in st.session_state:
     with tab2:
         st.markdown('<div class="section-header">Comparación de Rendimiento en Test</div>', unsafe_allow_html=True)
         
-        start_date = pd.to_datetime('2024-05-20')
-        end_date = pd.to_datetime('2025-05-20')
+        start_date = pd.to_datetime('2024-05-5')
+        end_date = pd.to_datetime('2025-05-5')
         returns_data = test_weekly_returns.loc[(test_weekly_returns.index >= start_date) & (test_weekly_returns.index <= end_date)]
         
         if returns_data.empty:
@@ -1019,3 +1019,5 @@ st.caption("""
 *Nota: Los resultados se basan en datos históricos y no garantizan rendimientos futuros. 
 La diversificación no elimina completamente el riesgo de mercado.*
 """)
+
+

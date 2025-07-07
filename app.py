@@ -36,7 +36,7 @@ tickers = [
 
 # Función para descargar y procesar datos
 def load_data():
-    end_date = datetime(2025, 5, 5)
+    end_date = datetime(2025, 5, 20)
     start_date = end_date - timedelta(days=3*365)
     test_start_date = end_date - timedelta(days=365)
     

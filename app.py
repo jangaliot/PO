@@ -36,7 +36,7 @@ tickers = [
 
 # Función para descargar y procesar datos
 def load_data():
-    end_date = datetime(2025, 6, 5)
+    end_date = datetime(2025, 6, 1)
     start_date = end_date - timedelta(days=3*365)
     test_start_date = end_date - timedelta(days=365)
     
@@ -691,8 +691,8 @@ if 'carteras' in st.session_state:
     with tab2:
         st.markdown('<div class="section-header">Comparación de Rendimiento en Test</div>', unsafe_allow_html=True)
         
-        start_date = pd.to_datetime('2024-06-05')
-        end_date = pd.to_datetime('2025-06-05')
+        start_date = pd.to_datetime('2024-06-01')
+        end_date = pd.to_datetime('2025-06-01')
         returns_data = test_weekly_returns.loc[(test_weekly_returns.index >= start_date) & (test_weekly_returns.index <= end_date)]
         
         if returns_data.empty:

@@ -36,7 +36,7 @@ tickers = [
 
 # Función para descargar y procesar datos
 def load_data():
-    end_date = datetime(2025, 7, 7)
+    end_date = datetime(2025, 7, 07)
     start_date = end_date - timedelta(days=3*365)
     test_start_date = end_date - timedelta(days=365)
     
@@ -691,8 +691,8 @@ if 'carteras' in st.session_state:
     with tab2:
         st.markdown('<div class="section-header">Comparación de Rendimiento en Test</div>', unsafe_allow_html=True)
         
-        start_date = pd.to_datetime('2024-7-7')
-        end_date = pd.to_datetime('2025-7-7')
+        start_date = pd.to_datetime('2024-07-07')
+        end_date = pd.to_datetime('2025-07-07')
         returns_data = test_weekly_returns.loc[(test_weekly_returns.index >= start_date) & (test_weekly_returns.index <= end_date)]
         
         if returns_data.empty:
@@ -781,6 +781,19 @@ if 'carteras' in st.session_state:
         st.markdown('<div class="section-header">Análisis Estadístico de Carteras</div>', unsafe_allow_html=True)
         
         st.markdown("### Intervalos de Confianza de las Métricas (Período de Entrenamiento)")
+        
+        # Lista de métricas disponibles
+        metrics = ['Retorno', 'Volatilidad', 'Sharpe', 'VaR 95%', 'CVaR 95%', 'Sortino']
+        
+        # Desplegable para seleccionar la métrica
+        selected_metric = st.selectbox(
+            "Seleccionar Métrica",
+            options=metrics,
+            index=metrics.index('Sharpe'),  # Por defecto, mostrar Sharpe
+            help="Selecciona una métrica para ver sus intervalos de confianza del 95%."
+        )
+        
+        # Calcular los intervalos de confianza
         ci_data = []
         confidence_level = 0.95
         for nombre, pesos in carteras.items():
@@ -846,64 +859,63 @@ if 'carteras' in st.session_state:
         
         ci_df = pd.DataFrame(ci_data)
         
-        # Plot CI para cada métrica
-        metrics = ['Retorno', 'Volatilidad', 'Sharpe', 'VaR 95%', 'CVaR 95%', 'Sortino']
-        for metric in metrics:
-            fig_ci = go.Figure()
-            colors = px.colors.qualitative.Plotly
-            for i, row in ci_df.iterrows():
-                fig_ci.add_trace(go.Scatter(
-                    x=[row['Cartera']],
-                    y=[row[f'{metric} Media']],
-                    error_y=dict(
-                        type='data',
-                        symmetric=True,
-                        array=[row[f'{metric} CI Upper'] - row[f'{metric} Media']],
-                        thickness=1.5,
-                        width=5
-                    ),
-                    mode='markers',
-                    marker=dict(size=10, color=colors[i % len(colors)]),
-                    name=row['Cartera']
-                ))
-            
-            y_title = {
-                'Retorno': 'Retorno Anual',
-                'Volatilidad': 'Volatilidad Anual',
-                'Sharpe': 'Ratio de Sharpe',
-                'VaR 95%': 'VaR 95% Anual',
-                'CVaR 95%': 'CVaR 95% Anual',
-                'Sortino': 'Ratio de Sortino'
-            }[metric]
-            
-            fig_ci.update_layout(
-                title=dict(
-                    text=f"Intervalos de Confianza del 95% para {metric} (Período de Entrenamiento)",
-                    font=dict(color="#FFFFFF", size=16)
+        # Generar el gráfico para la métrica seleccionada
+        fig_ci = go.Figure()
+        colors = px.colors.qualitative.Plotly
+        for i, row in ci_df.iterrows():
+            fig_ci.add_trace(go.Scatter(
+                x=[row['Cartera']],
+                y=[row[f'{selected_metric} Media']],
+                error_y=dict(
+                    type='data',
+                    symmetric=True,
+                    array=[row[f'{selected_metric} CI Upper'] - row[f'{selected_metric} Media']],
+                    thickness=1.5,
+                    width=5
                 ),
-                xaxis_title="Cartera",
-                yaxis_title=y_title,
-                legend=dict(
-                    font=dict(color="#FFFFFF", size=12)
-                ),
-                height=500,
-                showlegend=True,
-                xaxis=dict(
-                    tickangle=45,
-                    gridcolor='#374151',
-                    tickfont=dict(color="#FFFFFF"),
-                    title_font=dict(color="#FFFFFF")
-                ),
-                yaxis=dict(
-                    gridcolor='#374151',
-                    tickfont=dict(color="#FFFFFF"),
-                    title_font=dict(color="#FFFFFF")
-                ),
-                paper_bgcolor='#1F2937',
-                plot_bgcolor='#1F2937',
-                font=dict(color="#FFFFFF")
-            )
-            st.plotly_chart(fig_ci, use_container_width=True)
+                mode='markers',
+                marker=dict(size=10, color=colors[i % len(colors)]),
+                name=row['Cartera']
+            ))
+        
+        y_title = {
+            'Retorno': 'Retorno Anual',
+            'Volatilidad': 'Volatilidad Anual',
+            'Sharpe': 'Ratio de Sharpe',
+            'VaR 95%': 'VaR 95% Anual',
+            'CVaR 95%': 'CVaR 95% Anual',
+            'Sortino': 'Ratio de Sortino'
+        }[selected_metric]
+        
+        fig_ci.update_layout(
+            title=dict(
+                text=f"Intervalos de Confianza del 95% para {selected_metric} (Período de Entrenamiento)",
+                font=dict(color="#FFFFFF", size=16)
+            ),
+            xaxis_title="Cartera",
+            yaxis_title=y_title,
+            legend=dict(
+                font=dict(color="#FFFFFF", size=12)
+            ),
+            height=500,
+            showlegend=True,
+            xaxis=dict(
+                tickangle=45,
+                gridcolor='#374151',
+                tickfont=dict(color="#FFFFFF"),
+                title_font=dict(color="#FFFFFF")
+            ),
+            yaxis=dict(
+                gridcolor='#374151',
+                tickfont=dict(color="#FFFFFF"),
+                title_font=dict(color="#FFFFFF")
+            ),
+            paper_bgcolor='#1F2937',
+            plot_bgcolor='#1F2937',
+            font=dict(color="#FFFFFF")
+        )
+        
+        st.plotly_chart(fig_ci, use_container_width=True)
         
         st.markdown("*Nota: Los intervalos que se solapan indican que las carteras no son significativamente diferentes en términos de la métrica correspondiente.*")
 

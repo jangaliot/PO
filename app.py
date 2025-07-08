@@ -691,8 +691,8 @@ if 'carteras' in st.session_state:
     with tab2:
         st.markdown('<div class="section-header">Comparación de Rendimiento en Test</div>', unsafe_allow_html=True)
         
-        start_date = pd.to_datetime('2024-06-01')
-        end_date = pd.to_datetime('2025-06-01')
+        start_date = pd.to_datetime('2024-05-02')
+        end_date = pd.to_datetime('2025-05-02')
         returns_data = test_weekly_returns.loc[(test_weekly_returns.index >= start_date) & (test_weekly_returns.index <= end_date)]
         
         if returns_data.empty:
